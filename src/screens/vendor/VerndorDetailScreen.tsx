@@ -103,6 +103,8 @@ const VerndorDetailScreen = () => {
                   coordinate={{
                     latitude: Number(venderData?.latitude),
                     longitude: Number(venderData?.longitude),
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
                   }}
                 />
               </MapView>
@@ -324,9 +326,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   map: {
-    // height: hp(17),
-    // width: wp(92),
-    flex: 1,
+     flex: 1,
   },
 });
 

@@ -13,16 +13,14 @@ export const makePostApiCall = async (
   token = '',
 ) => {
   console.log('working...');
-  
+
   try {
     const headers = isFormData
       ? {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
         }
-      : {'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      };
+      : {'Content-Type': 'application/json', Authorization: `Bearer ${token}`};
 
     console.log(`
         URL: ${url} Payload: ${data}token:${token}
@@ -176,7 +174,7 @@ export const getLocationCoordinates = () => {
         Alert.alert('Location Error', errorMessage);
         reject(error);
       },
-      // { enableHighAccuracy: true, timeout: 30000, maximumAge: 10000 }
+      // {enableHighAccuracy: true, timeout: 30000, maximumAge: 10000},
     );
   });
 };

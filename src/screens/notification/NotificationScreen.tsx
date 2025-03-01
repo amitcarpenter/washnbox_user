@@ -25,6 +25,8 @@ import {
   addSelectedUserData,
 } from '../../redux/dataSlice';
 import ActivityIndicter from '../../component/activityIndicator';
+import {hp, wp} from '../../config';
+import {BackBtnHandler} from '../../utils/backBtnHandler';
 
 const NotificationScreen = () => {
   const navigation = useNavigation();
@@ -33,6 +35,11 @@ const NotificationScreen = () => {
   const dispatch = useDispatch();
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+  BackBtnHandler(false, () => {
+    navigation.goBack();
+    return true;
+  });
 
   useEffect(() => {
     getToken();
@@ -68,6 +75,7 @@ const NotificationScreen = () => {
       payment_status: 'Paid',
       profile_image: item?.provider?.profile_image,
       mobile_number: item?.provider?.mobile_number,
+      name: item?.provider?.name,
     };
     dispatch(addSelectedUserData(item?.user));
     dispatch(addSelectedOrderDetails(details));
@@ -75,17 +83,18 @@ const NotificationScreen = () => {
   };
 
   const renderNotificationsItem = (item: any) => {
-    console.log('item==n=>', item);
+    console.log('item=n=>', item);
 
     const details = {
       message: item?.notification_message || 'Message not available',
-      name: item?.user?.name || 'User',
+      name: item?.provider?.shop_name || 'User',
       date: new Date(item?.order?.updated_at).toLocaleDateString(),
       time: new Date(item?.order?.updated_at).toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
         hour12: true,
       }),
+      image: item?.provider?.profile_image,
     };
     return (
       <View style={styles.notificationCard}>
@@ -96,10 +105,13 @@ const NotificationScreen = () => {
 
           <View style={styles.textContainer}>
             <View style={styles.titleRow}>
-              <Text style={styles.title}>An Order received</Text>
+              <Text style={styles.title}>{item?.notification_message}</Text>
             </View>
             <View style={styles.userRow}>
-              <Image source={USERS.user1} style={styles.userImage} />
+              <Image
+                source={details?.image ? {uri: details.image} : IMAGES.profile}
+                style={styles.userImage}
+              />
               <Text style={styles.userName}>{details.name}</Text>
             </View>
           </View>
@@ -151,7 +163,6 @@ const styles = StyleSheet.create({
   },
   notificationCard: {
     width: '100%',
-    height: 135,
     backgroundColor: '#F1F1F1',
     marginVertical: 10,
     borderRadius: 8,
@@ -182,6 +193,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '500',
+    marginVertical: hp(2),
   },
   userRow: {
     flex: 0.5,
@@ -192,7 +204,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 30,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
   },
   userName: {
     fontSize: 16,
@@ -209,6 +221,7 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 14,
     fontWeight: '600',
+    color: COLORS.txtGray,
   },
   buttonContainer: {
     flex: 0.4,

@@ -26,6 +26,7 @@ import {
   addSelectedOrderDetails,
   addSelectedUserData,
 } from '../../redux/dataSlice';
+import {BackBtnHandler} from '../../utils/backBtnHandler';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -118,7 +119,7 @@ const HomeScreen = () => {
         onPress={() => navigation.navigate('NotificationScreen')}>
         <Image
           source={ICONS.notification_bell}
-          style={styles.notificationIcon} 
+          style={styles.notificationIcon}
         />
       </TouchableOpacity>
       {/* <TouchableOpacity onPress={openFilterModal} style={styles.filterButton}>
@@ -141,6 +142,8 @@ const HomeScreen = () => {
   };
 
   const renderOrderItem = ({item}) => {
+    console.log('item==v>', item);
+
     const data = {
       shop_name: item?.shop_name || 'Not Available',
       all_services:
@@ -151,8 +154,8 @@ const HomeScreen = () => {
       latitude: item?.latitude,
       longitude: item?.longitude,
       profile_image: item?.profile_image,
+      provider_id:item?.provider_id
     };
-    console.log('item==>', item);
 
     return (
       <TouchableOpacity
@@ -161,7 +164,9 @@ const HomeScreen = () => {
         style={styles.orderItemContainer}>
         <View style={styles.imageContainer}>
           <Image
-            source={{uri: item?.profile_image}}
+            source={
+              item?.profile_image ? {uri: item?.profile_image} : IMAGES.profile
+            }
             style={styles.orderImage}
           />
         </View>

@@ -27,12 +27,13 @@ import {
 } from '../../utils/helper';
 import {PROVIDER_URLS} from '../../utils/config';
 import ActivityIndicter from '../../component/activityIndicator';
+import {BackBtnHandler} from '../../utils/backBtnHandler';
 
 const OrderDetails = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const refRBSheet = useRef();
   const [selectedClothId, setSelectedClothId] = useState([]);
-  const [timeSlot, setTimeSlot] = useState('');
+  const [timeSlot, setTimeSlot] = useState(TimeSlots[0]?.time_range);
   const [profile, setProfile] = useState({});
   const venderData = useSelector(state => state?.selectedUser);
   const [selectedValues, setSelectedValues] = useState({}); // Track selected service per item
@@ -50,6 +51,13 @@ const OrderDetails = () => {
     fetchProfileDetails();
   }, []);
 
+  console.log('venderData==>', venderData);
+
+  BackBtnHandler(false, () => {
+    navigation.goBack();
+    return true;
+  });
+
   const fetchProfileDetails = async () => {
     let token = await getUserToken();
     let {result} = await makeGetApiCall(PROVIDER_URLS.PROFILE, token);
@@ -59,9 +67,9 @@ const OrderDetails = () => {
 
   const prepareOrderData = () => {
     const formattedItems = selectedClothTypeItem.map(item => ({
-      item_name: item.type,
-      quantity: item.quantity,
-      service_type: item.selectedService,
+      item_name: item?.type,
+      quantity: item?.quantity,
+      service_type: item?.selectedService,
       price_per_unit:
         venderData?.all_services.find(
           service => service.name === item.selectedService,
@@ -74,8 +82,8 @@ const OrderDetails = () => {
     );
 
     const orderData = {
-      provider_id: venderData?.id || 1, // Replace with actual provider ID
-      user_id: profile?.user_id, // Replace with actual user ID
+      provider_id: venderData?.provider_id,
+      user_id: profile?.user_id,
       total_price: totalPrice,
       item_details: formattedItems,
       scheduled_pickup_time: timeSlot,
@@ -197,7 +205,7 @@ const OrderDetails = () => {
             fontWeight: '500',
             position: 'absolute',
           }}>
-          Delivery at -
+          Pickup at -
         </Text>
 
         <View style={styles.lockboxAndCallIconContainer}>

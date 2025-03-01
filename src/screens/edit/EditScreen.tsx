@@ -39,6 +39,7 @@ import {getAddressFromCoordinates} from '../../utils/helper';
 import {useSelector} from 'react-redux';
 import {check} from '../../config';
 import ActivityIndicter from '../../component/activityIndicator';
+import { BackBtnHandler } from '../../utils/backBtnHandler';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -71,6 +72,11 @@ const EditScreen = () => {
     getToken();
     // fetchClothsTypesForBottomSheet()
   }, [token]);
+
+    BackBtnHandler(false, () => {
+      navigation.goBack();
+      return true;
+    });
 
   useEffect(() => {
     getLocationPermission();

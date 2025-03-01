@@ -13,10 +13,16 @@ import {fontSize, hp, wp} from '../../config';
 import Header from '../../component/header/Header';
 import {useNavigation} from '@react-navigation/native';
 import {COLORS, ICONS, IMAGES} from '../../constant/constant';
+import {BackBtnHandler} from '../../utils/backBtnHandler';
 
 const OrderDetail = () => {
   const navigation = useNavigation();
   const orderDetails = useSelector((state: any) => state?.selectedOrderDetails);
+
+  BackBtnHandler(false, () => {
+    navigation.goBack();
+    return true;
+  });
 
   const itemList = orderDetails?.services_details || [];
 
@@ -59,7 +65,7 @@ const OrderDetail = () => {
         </View>
       </View>
       <View style={styles.box1}>
-        <Text style={styles.txt}>Lock Box Drop Off</Text>
+        <Text style={styles.txt}>{orderDetails?.name}</Text>
         <TouchableOpacity
           onPress={() => callVendor(orderDetails?.mobile_number)}
           style={styles.callIconButton}>

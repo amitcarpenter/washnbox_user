@@ -24,6 +24,7 @@ import {addLoginData} from '../../redux/dataSlice';
 import {check} from '../../config';
 import ActivityIndicter from '../../component/activityIndicator';
 import CheckBox from 'react-native-check-box';
+import {BackBtnHandler} from '../../utils/backBtnHandler';
 
 let isChecked1 = false;
 const RegisterPhoneScreen = () => {
@@ -34,7 +35,7 @@ const RegisterPhoneScreen = () => {
   const savedFormattedValue =
     useSelector((state: any) => state?.loginData?.formattedValue) || '';
   const [value, setValue] = useState(savedNumber);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [formattedValue, setFormattedValue] = useState(savedFormattedValue);
   const dispatch = useDispatch();
   const [isChecked, setIsChecked] = useState(false);
@@ -44,14 +45,13 @@ const RegisterPhoneScreen = () => {
   }, [formattedValue]);
 
   const validation = () => {
-    console.log('isChecked==>>>,', isChecked);
     if (formattedValue == '') {
       Alert.alert('Error', 'Please enter a phone number.');
       return false;
     } else if (!check.phoneNumber.test(formattedValue)) {
       Alert.alert('Error', 'Please enter a valid phone number.');
       return false;
-    } else if (isChecked1 === false) {
+    } else if (!isChecked1) {
       Alert.alert('Error', 'Please agree to the terms and conditions.');
       return false;
     } else {
@@ -59,7 +59,9 @@ const RegisterPhoneScreen = () => {
     }
   };
 
-  console.log('isChecked=>', isChecked);
+  BackBtnHandler(true, () => {
+    return false;
+  });
 
   const onRegisterNumberPress = async () => {
     let formattedNum = formattedValue;
@@ -68,6 +70,7 @@ const RegisterPhoneScreen = () => {
       let data = {mobile_number: formattedNum};
       let url = PROVIDER_URLS.LOGIN_WITH_NUMBER;
       let response = await makePostApiCall(url, data);
+      isChecked1 = false;
       setLoading(false);
       await checkResponse(response);
     }
@@ -140,6 +143,8 @@ const RegisterPhoneScreen = () => {
             <View style={styles.checkContainer}>
               <CheckBox
                 onClick={() => {
+                  console.log('working..', isChecked1);
+
                   isChecked1 = !isChecked1;
                   setIsChecked(!isChecked);
                 }}

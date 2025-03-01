@@ -8,11 +8,12 @@ import Container from '../../component/view/Container';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {makePostApiCall} from '../../utils/helper';
-import {PROVIDER_URLS} from '../../utils/config';
+import {NAVIGATE_TO, PROVIDER_URLS} from '../../utils/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ActivityIndicter from '../../component/activityIndicator';
 import {check} from '../../config';
 import {addLoginData} from '../../redux/dataSlice';
+import {BackBtnHandler} from '../../utils/backBtnHandler';
 
 const OtpScreen = () => {
   const navigation = useNavigation();
@@ -53,6 +54,11 @@ const OtpScreen = () => {
       />
     );
   };
+
+  BackBtnHandler(false, () => {
+    navigation.goBack();
+    return true;
+  });
 
   const handleSendAgain = async () => {
     setLoading(true);
@@ -95,7 +101,6 @@ const OtpScreen = () => {
       let url = PROVIDER_URLS.LOGIN_WITH_OTP;
       let response = await makePostApiCall(url, data);
       console.log('response=>', response);
-
       setLoading(false);
       await checkResponse(response);
     }
@@ -103,8 +108,13 @@ const OtpScreen = () => {
 
   const checkResponse = async (response: any) => {
     if (response?.result?.success == true) {
-      await storeToken(response);
-      navigation.navigate('ProfileScreen' as never);
+      if (response?.result?.is_complete_profile == false) {
+        await storeToken(response);
+        navigation.navigate('ProfileScreen' as never);
+      } else {
+        await storeToken(response);
+        navigation.navigate(NAVIGATE_TO.TAB_NAVIGATION as never);
+      }
     } else {
       Alert.alert('Incorrect OTP', 'Please enter the correct code.', [
         {

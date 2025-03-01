@@ -21,6 +21,7 @@ import {addSelectedOrderDetails} from '../../redux/dataSlice';
 import CheckBox from 'react-native-check-box';
 import DropDownPicker from 'react-native-dropdown-picker';
 import ActivityIndicter from '../../component/activityIndicator';
+import {BackBtnHandler} from '../../utils/backBtnHandler';
 
 const OrderScreen = () => {
   const navigation = useNavigation();
@@ -79,6 +80,11 @@ const OrderScreen = () => {
     }, 3000);
   };
 
+  BackBtnHandler(false, () => {
+    navigation.goBack();
+    return true;
+  });
+
   const navigateToOrderDetails = (details: any) => {
     dispatch(addSelectedOrderDetails(details));
     navigation.navigate('OrderDetail' as never);
@@ -104,14 +110,15 @@ const OrderScreen = () => {
       date_time: new Date(item?.updated_at).toLocaleString(),
       order_id: item?.order_id || '123',
       address: item?.address,
-      lock_code: item?.lock_code || '5789',
+      lock_code: item?.lock_code || item?.scheduled_pickup_time,
       shop_name: item?.provider?.shop_name,
       services_details: item?.item_details,
       total_price: item?.total_price || '180.00',
       order_status: 'Pending',
-      payment_status: 'Paid',
+      payment_status: item?.order_payment.payment_method,
       profile_image: item?.provider?.profile_image,
       mobile_number: item?.provider?.mobile_number,
+      name: item?.provider?.name,
     };
 
     return (
@@ -124,10 +131,7 @@ const OrderScreen = () => {
         </View>
         <View style={styles.orderItemFooter}>
           <View style={styles.orderDetailsContainer}>
-            <Text style={styles.orderIdText}>OID {details?.order_id}</Text>
-            <Text style={styles.lockCodeText}>
-              Lock Code - {details?.lock_code}
-            </Text>
+            <Text style={styles.lockCodeText}>{details?.lock_code}</Text>
           </View>
           <View style={styles.paymentContainer}>
             <Text style={styles.paymentStatus}>{details?.payment_status}</Text>
@@ -386,7 +390,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   orderDetailsContainer: {
-    flex: 0.6,
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
@@ -406,11 +409,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   paymentContainer: {
-    flex: 0.4,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    // paddingLeft:10,
     paddingHorizontal: 10,
   },
   paymentStatus: {
@@ -419,6 +419,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: COLORS.primary,
     // paddingLeft: 20
+    marginRight: 20,
   },
   paymentAmount: {
     fontWeight: '700',
